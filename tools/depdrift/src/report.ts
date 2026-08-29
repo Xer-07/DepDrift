@@ -34,11 +34,11 @@ export function generateReport(
   const low = findings.filter(f => f.severity === "low");
 
   if (findings.length === 0) {
-    console.log(chalk.bold.green("✨ Clean repo! Zero dependency drift findings detected.\n"));
+    console.log(chalk.bold.green("Clean repository. Zero dependency drift findings detected.\n"));
   } else {
     // Print Top 3 High Severity
     if (high.length > 0) {
-      console.log(chalk.bold.red(`🔴 HIGH SEVERITY FINDINGS (Showing Top 3 of ${high.length})`));
+      console.log(chalk.bold.red(`HIGH SEVERITY FINDINGS (Showing Top 3 of ${high.length})`));
       console.log(chalk.red("----------------------------------------"));
       for (const f of high.slice(0, 3)) {
         printFinding(f);
@@ -50,7 +50,7 @@ export function generateReport(
 
     // Print Top 3 Medium Severity
     if (medium.length > 0) {
-      console.log(chalk.bold.yellow(`\n🟡 MEDIUM SEVERITY FINDINGS (Showing Top 3 of ${medium.length})`));
+      console.log(chalk.bold.yellow(`\nMEDIUM SEVERITY FINDINGS (Showing Top 3 of ${medium.length})`));
       console.log(chalk.yellow("----------------------------------------"));
       for (const f of medium.slice(0, 3)) {
         printFinding(f);
@@ -62,7 +62,7 @@ export function generateReport(
 
     // Print Top 3 Low Severity
     if (low.length > 0) {
-      console.log(chalk.bold.blue(`\n🔵 LOW SEVERITY FINDINGS (Showing Top 3 of ${low.length})`));
+      console.log(chalk.bold.blue(`\nLOW SEVERITY FINDINGS (Showing Top 3 of ${low.length})`));
       console.log(chalk.blue("----------------------------------------"));
       for (const f of low.slice(0, 3)) {
         printFinding(f);
@@ -77,9 +77,9 @@ export function generateReport(
   console.log("\n" + chalk.bold("----------------------------------------"));
   console.log(chalk.bold("TOTAL SUMMARY COUNT"));
   console.log(chalk.bold("----------------------------------------"));
-  console.log(`${chalk.red(`🔴 ${high.length} High`)} | ${chalk.yellow(`🟡 ${medium.length} Medium`)} | ${chalk.blue(`🔵 ${low.length} Low`)} | Total: ${findings.length}`);
-  console.log(chalk.bold.green(`\n📄 HTML Report generated at: ${htmlPath}`));
-  console.log(chalk.gray(`📊 JSON Report generated at: ${jsonPath}\n`));
+  console.log(`${chalk.red(`${high.length} High`)} | ${chalk.yellow(`${medium.length} Medium`)} | ${chalk.blue(`${low.length} Low`)} | Total: ${findings.length}`);
+  console.log(chalk.bold.green(`\nHTML Report generated at: ${htmlPath}`));
+  console.log(chalk.gray(`JSON Report generated at: ${jsonPath}\n`));
 
   return htmlPath;
 }
@@ -299,9 +299,9 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
         <p>Generated on ${timestamp}</p>
       </div>
       <div class="stats-bar">
-        <div class="stat-pill high">🔴 ${highCount} High</div>
-        <div class="stat-pill medium">🟡 ${mediumCount} Medium</div>
-        <div class="stat-pill low">🔵 ${lowCount} Low</div>
+        <div class="stat-pill high">High: ${highCount}</div>
+        <div class="stat-pill medium">Medium: ${mediumCount}</div>
+        <div class="stat-pill low">Low: ${lowCount}</div>
       </div>
     </header>
 

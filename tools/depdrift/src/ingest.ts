@@ -35,12 +35,12 @@ export async function ingestRepo(input: string): Promise<IngestResult> {
 
     const repoRoot = path.join(parentDir, repoName);
 
-    console.log(`📥 Cloning ${input} (shallow depth 50)...`);
+    console.log(`Cloning ${input} (shallow depth 50)...`);
 
     const git = simpleGit({
       progress({ method, stage, progress }) {
         if (progress % 25 === 0 || progress === 100) {
-          console.log(`  └─ Git ${method} [${stage}]: ${progress}%`);
+          console.log(`  Git ${method} [${stage}]: ${progress}%`);
         }
       },
     });
@@ -48,7 +48,7 @@ export async function ingestRepo(input: string): Promise<IngestResult> {
     try {
       await git.clone(cloneUrl, repoRoot, ["--depth", "50"]);
 
-      console.log(`✅ Clone complete: ${repoRoot}`);
+      console.log(`Clone complete: ${repoRoot}`);
 
       return {
         repoRoot,

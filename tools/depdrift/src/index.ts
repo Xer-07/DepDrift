@@ -49,13 +49,13 @@ async function main() {
     process.exit(0);
   }
 
-  console.log(`\n🔍 Starting DepDrift scan on target: ${options.inputPath}`);
+  console.log(`\nStarting DepDrift scan on target: ${options.inputPath}`);
 
   let ingestResult;
   try {
     ingestResult = await ingestRepo(options.inputPath);
   } catch (err: any) {
-    console.error(`❌ Ingestion failed: ${err.message}`);
+    console.error(`Error: Ingestion failed: ${err.message}`);
     process.exit(1);
   }
 
@@ -64,7 +64,7 @@ async function main() {
   try {
     const detectors = getActiveDetectors(repoRoot);
     if (detectors.length === 0) {
-      console.log("⚠ No supported ecosystems (Node or Python) detected in target repository.");
+      console.log("Warning: No supported ecosystems (Node or Python) detected in target repository.");
       cleanup();
       process.exit(0);
     }
@@ -100,7 +100,7 @@ async function main() {
       process.exit(0);
     }
   } catch (err: any) {
-    console.error(`❌ Scan error: ${err.message}`);
+    console.error(`Error: Scan error: ${err.message}`);
     cleanup();
     process.exit(1);
   }
