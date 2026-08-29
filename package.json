@@ -1,0 +1,14 @@
+{
+  "name": "depdrift-monorepo",
+  "private": true,
+  "workspaces": ["packages/*", "tools/*"],
+  "scripts": {
+    "build": "turbo run build",
+    "depdrift": "npm --prefix tools/depdrift run dev"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "turbo": "latest",
+    "typescript": "5.6.3"
+  }
+}

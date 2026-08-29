@@ -1,0 +1,39 @@
+name: DepDrift Security & Dependency Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  depdrift-scan:
+    name: Run DepDrift Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install DepDrift Dependencies
+        run: npm install --prefix tools/depdrift
+
+      - name: Build DepDrift CLI
+        run: npm --prefix tools/depdrift run build
+
+      - name: Run DepDrift Scan
+        run: node tools/depdrift/dist/index.js scan . --history
+
+      - name: Upload DepDrift Report Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: depdrift-report
+          path: depdrift-report.json
