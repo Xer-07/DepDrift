@@ -214,20 +214,47 @@ export class NodeDetector implements EcosystemDetector {
         (owningPkg.mainFile && relFilePath.endsWith(owningPkg.mainFile.replace(/^\.\//, "")));
 
       for (const importDecl of sourceFile.getImportDeclarations()) {
-        const specifier = importDecl.getModuleSpecifierValue().trim();
-        const basePkg = getBasePackageName(specifier);
-        if (!basePkg) continue;
-        if (basePkg === owningPkg.name) continue;
+        try {
+          const specifier = importDecl.getModuleSpecifierValue()?.trim();
+          if (!specifier) continue;
+          const basePkg = getBasePackageName(specifier);
+          if (!basePkg) continue;
+          if (basePkg === owningPkg.name) continue;
 
-        edges.push({
-          ecosystem: "node",
-          fromPackage: owningPkg.name,
-          fromPackagePath: owningPkg.dirPath,
-          fromFile: relFilePath,
-          toPackage: basePkg,
-          importedSpecifier: specifier,
-          isMainBuildEntrypoint: Boolean(isMain),
-        });
+          edges.push({
+            ecosystem: "node",
+            fromPackage: owningPkg.name,
+            fromPackagePath: owningPkg.dirPath,
+            fromFile: relFilePath,
+            toPackage: basePkg,
+            importedSpecifier: specifier,
+            isMainBuildEntrypoint: Boolean(isMain),
+          });
+        } catch {
+          // ignore non-string literal dynamic import specifiers
+        }
+      }
+
+      for (const exportDecl of sourceFile.getExportDeclarations()) {
+        try {
+          const specifier = exportDecl.getModuleSpecifierValue()?.trim();
+          if (!specifier) continue;
+          const basePkg = getBasePackageName(specifier);
+          if (!basePkg) continue;
+          if (basePkg === owningPkg.name) continue;
+
+          edges.push({
+            ecosystem: "node",
+            fromPackage: owningPkg.name,
+            fromPackagePath: owningPkg.dirPath,
+            fromFile: relFilePath,
+            toPackage: basePkg,
+            importedSpecifier: specifier,
+            isMainBuildEntrypoint: Boolean(isMain),
+          });
+        } catch {
+          // ignore
+        }
       }
     }
 
