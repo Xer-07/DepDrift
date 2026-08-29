@@ -2,6 +2,7 @@ node_modules
 dist
 depdrift-report.json
 depdrift-report.html
-reports/
+reports/*
+!reports/*/.gitkeep
 docusaurus-test
 .DS_Store
