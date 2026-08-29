@@ -102,6 +102,8 @@ Scans generate two output artifacts routed to `reports/<local|github|history>/`:
 1. **`depdrift-report.json`**: Structured JSON containing findings, severity levels, file evidence, commit hashes, and suggested fixes.
 2. **`depdrift-report.html`**: A visual summary report for interactive inspection.
 
+Note: An interactive Web UI/UX Dashboard for visualizing reports and AI remediation recommendations is currently in development.
+
 ### Finding Severity Levels
 * **HIGH**: Missing dependency imported in main entrypoints or source files (risk of production runtime crash).
 * **MEDIUM**: Version constraint mismatch between declared ranges and resolved lockfile versions.
