@@ -2,6 +2,6 @@
   "name": "@demo/app",
   "version": "1.0.0",
   "main": "src/index.ts",
-  "dependencies": { "@demo/ui": "*", "@demo/config": "*" },
+  "dependencies": { "@demo/ui": "*", "@demo/config": "*", "lodash": "^4.17.21" },
   "scripts": { "build": "tsc" }
 }
