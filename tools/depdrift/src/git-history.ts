@@ -21,10 +21,8 @@ export async function annotateGitHistory(
       return findings;
     }
 
-    // Get log of commits touching package files
     const logResult = await git.log({
       maxCount: Math.min(maxCommits, 30),
-      file: "package.json package-lock.json requirements.txt pyproject.toml",
     });
 
     const commits = logResult.all;
