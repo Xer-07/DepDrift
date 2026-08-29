@@ -13,9 +13,9 @@ In modern software development, dependency management frequently suffers from de
 3. **Resolved Lockfiles and History**: Versions pinned in `package-lock.json` or modified across Git commit histories.
 
 Discrepancies across these layers cause critical issues:
-* **Undeclared Runtime Dependencies**: Source files importing external packages that are missing from manifest declarations, causing runtime module resolution failures in production builds.
+* **Undeclared Runtime Dependencies**: Source files importing external packages missing from workspace manifest declarations. While local development may succeed due to `node_modules` hoisting, isolated production builds and Turborepo (`turbo run build`) pipelines fail with `Cannot find module` resolution errors.
 * **Unnecessary Bloat**: Manifests declaring packages that are no longer imported in source code.
-* **Unnoticed Version Drift**: Differences between declared version constraints and lockfile resolutions across workspace subprojects.
+* **Unnoticed Version Drift**: Differences between declared version constraints and lockfile resolutions across Turborepo subprojects.
 
 ---
 
@@ -27,7 +27,7 @@ Key capabilities include:
 * **AST Source Scanning**: Parses TypeScript, JavaScript (`ts-morph`), and Python source files to extract actual import specifiers and map them to owning packages.
 * **Manifest & Lockfile Matching**: Extracts declared dependency graphs and cross-checks them against lockfile resolutions and source imports.
 * **Git History Attribution**: Traces commit histories to identify the specific commit and date that introduced a dependency drift.
-* **Polyglot & Monorepo Support**: Discovers and evaluates multiple workspace packages within Node.js monorepos and Python environments simultaneously.
+* **Polyglot & Turborepo Monorepo Support**: Discovers and evaluates multiple workspace packages within Turborepo (`turbo`) monorepos and Python environments simultaneously.
 
 ---
 
