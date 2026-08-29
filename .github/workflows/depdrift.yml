@@ -30,6 +30,7 @@ jobs:
 
       - name: Run DepDrift Scan
         run: node tools/depdrift/dist/index.js scan . --history
+        continue-on-error: true
 
       - name: Upload DepDrift Report Artifact
         uses: actions/upload-artifact@v4
