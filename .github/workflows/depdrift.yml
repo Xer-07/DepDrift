@@ -36,4 +36,4 @@ jobs:
         if: always()
         with:
           name: depdrift-report
-          path: depdrift-report.json
+          path: reports/history/depdrift-report.json

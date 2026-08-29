@@ -2,5 +2,6 @@ node_modules
 dist
 depdrift-report.json
 depdrift-report.html
+reports/
 docusaurus-test
 .DS_Store

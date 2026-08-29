@@ -80,7 +80,16 @@ async function main() {
       findings = await annotateGitHistory(repoRoot, findings, options.commits);
     }
 
-    generateReport(findings);
+    let reportType: "local" | "github" | "history" = "local";
+    if (options.history) {
+      reportType = "history";
+    } else if (ingestResult.isTemp) {
+      reportType = "github";
+    } else {
+      reportType = "local";
+    }
+
+    generateReport(findings, reportType);
 
     const hasHighSeverity = findings.some(f => f.severity === "high");
     cleanup();

@@ -3,14 +3,25 @@ import path from "node:path";
 import chalk from "chalk";
 import { Finding } from "./types";
 
-export function generateReport(findings: Finding[], outputDir: string = process.cwd()): string {
+export type ReportType = "local" | "github" | "history";
+
+export function generateReport(
+  findings: Finding[],
+  reportType: ReportType = "local",
+  baseDir: string = process.cwd()
+): string {
+  const outputDir = path.join(baseDir, "reports", reportType);
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
   // 1. Write JSON Report
   const jsonPath = path.join(outputDir, "depdrift-report.json");
   fs.writeFileSync(jsonPath, JSON.stringify(findings, null, 2), "utf8");
 
   // 2. Write HTML Report
   const htmlPath = path.join(outputDir, "depdrift-report.html");
-  const htmlContent = generateHtmlReport(findings);
+  const htmlContent = generateHtmlReport(findings, reportType);
   fs.writeFileSync(htmlPath, htmlContent, "utf8");
 
   // 3. Terminal Print Summary (Top 3 per severity)
@@ -90,11 +101,12 @@ function printFinding(f: Finding) {
   console.log(`  ${chalk.bold.green("Suggested Fix:")} ${chalk.italic(f.suggestedFix)}`);
 }
 
-function generateHtmlReport(findings: Finding[]): string {
+function generateHtmlReport(findings: Finding[], reportType: ReportType = "local"): string {
   const highCount = findings.filter(f => f.severity === "high").length;
   const mediumCount = findings.filter(f => f.severity === "medium").length;
   const lowCount = findings.filter(f => f.severity === "low").length;
   const timestamp = new Date().toLocaleString();
+  const reportTypeLabel = reportType === "github" ? "GitHub Remote Scan" : reportType === "history" ? "Git History Scan" : "Local Scan";
 
   const safeJson = JSON.stringify(findings).replace(/</g, '\\u003c');
 
@@ -275,7 +287,7 @@ function generateHtmlReport(findings: Finding[]): string {
   <div class="container">
     <header>
       <div class="title-area">
-        <h1>DepDrift Analysis Report</h1>
+        <h1>DepDrift Analysis Report <span style="font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 4px; background: #374151; color: #6ee7b7; font-family: monospace; vertical-align: middle; text-transform: uppercase;">[${reportTypeLabel}]</span></h1>
         <p>Generated on ${timestamp}</p>
       </div>
       <div class="stats-bar">

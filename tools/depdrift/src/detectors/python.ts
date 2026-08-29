@@ -45,7 +45,7 @@ export class PythonDetector implements EcosystemDetector {
     try {
       const entries = fs.readdirSync(dir, { withFileTypes: true });
       for (const entry of entries) {
-        if (entry.name === ".venv" || entry.name === "venv" || entry.name === ".git" || entry.name === "__pycache__") {
+        if (entry.name === ".venv" || entry.name === "venv" || entry.name === ".git" || entry.name === "__pycache__" || entry.name === "docusaurus-test" || entry.name === "test-fixtures" || entry.name.startsWith("depdrift-scan-")) {
           continue;
         }
         if (entry.isDirectory()) {
@@ -155,7 +155,10 @@ export class PythonDetector implements EcosystemDetector {
             entry.name === ".git" ||
             entry.name === "__pycache__" ||
             entry.name === "build" ||
-            entry.name === "dist"
+            entry.name === "dist" ||
+            entry.name === "docusaurus-test" ||
+            entry.name === "test-fixtures" ||
+            entry.name.startsWith("depdrift-scan-")
           ) {
             continue;
           }

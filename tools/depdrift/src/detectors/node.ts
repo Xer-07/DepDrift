@@ -35,7 +35,7 @@ export class NodeDetector implements EcosystemDetector {
     function scanDir(dir: string) {
       const entries = fs.readdirSync(dir, { withFileTypes: true });
       for (const entry of entries) {
-        if (entry.name === "node_modules" || entry.name === ".git" || entry.name === "dist" || entry.name === "build" || entry.name === "test-fixtures") {
+        if (entry.name === "node_modules" || entry.name === ".git" || entry.name === "dist" || entry.name === "build" || entry.name === "test-fixtures" || entry.name === "docusaurus-test" || entry.name.startsWith("depdrift-scan-")) {
           continue;
         }
         const fullPath = path.join(dir, entry.name);
@@ -178,6 +178,8 @@ export class NodeDetector implements EcosystemDetector {
       `!${normalizedRepoRoot}/**/dist/**`,
       `!${normalizedRepoRoot}/**/build/**`,
       `!${normalizedRepoRoot}/**/test-fixtures/**`,
+      `!${normalizedRepoRoot}/**/docusaurus-test/**`,
+      `!${normalizedRepoRoot}/**/depdrift-scan-**`,
     ]);
 
     const edges: ActualEdge[] = [];
