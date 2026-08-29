@@ -118,19 +118,22 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
   <title>DepDrift - Analysis Report</title>
   <style>
     :root {
-      --bg: #0b0f19;
-      --card-bg: #111827;
-      --border: #1f2937;
-      --text: #f3f4f6;
-      --text-muted: #9ca3af;
-      --high: #ef4444;
-      --high-bg: rgba(239, 68, 68, 0.1);
-      --medium: #f59e0b;
-      --medium-bg: rgba(245, 158, 11, 0.1);
-      --low: #3b82f6;
-      --low-bg: rgba(59, 130, 246, 0.1);
-      --code-bg: #030712;
-      --accent: #10b981;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --high: #dc2626;
+      --high-bg: #fef2f2;
+      --high-border: #fca5a5;
+      --medium: #d97706;
+      --medium-bg: #fffbeb;
+      --medium-border: #fcd34d;
+      --low: #2563eb;
+      --low-bg: #eff6ff;
+      --low-border: #bfdbfe;
+      --code-bg: #f1f5f9;
+      --accent: #16a34a;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -151,7 +154,7 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
       flex-wrap: wrap;
       gap: 1rem;
     }
-    .title-area h1 { font-size: 1.75rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+    .title-area h1 { font-size: 1.75rem; font-weight: 700; color: #0f172a; letter-spacing: -0.02em; }
     .title-area p { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem; }
     .stats-bar { display: flex; gap: 0.75rem; }
     .stat-pill {
@@ -164,10 +167,11 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
-    .stat-pill.high { color: var(--high); border-color: rgba(239, 68, 68, 0.3); background: var(--high-bg); }
-    .stat-pill.medium { color: var(--medium); border-color: rgba(245, 158, 11, 0.3); background: var(--medium-bg); }
-    .stat-pill.low { color: var(--low); border-color: rgba(59, 130, 246, 0.3); background: var(--low-bg); }
+    .stat-pill.high { color: var(--high); border-color: var(--high-border); background: var(--high-bg); }
+    .stat-pill.medium { color: var(--medium); border-color: var(--medium-border); background: var(--medium-bg); }
+    .stat-pill.low { color: var(--low); border-color: var(--low-border); background: var(--low-bg); }
     
     .controls {
       display: flex;
@@ -185,8 +189,9 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
       color: var(--text);
       font-size: 0.875rem;
       outline: none;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
-    .search-input:focus { border-color: var(--low); }
+    .search-input:focus { border-color: #0284c7; }
     .filter-btn {
       padding: 0.6rem 1.2rem;
       background: var(--card-bg);
@@ -197,11 +202,12 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
       font-size: 0.875rem;
       font-weight: 500;
       transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
     .filter-btn.active, .filter-btn:hover {
-      color: #fff;
-      border-color: var(--text-muted);
-      background: #1f2937;
+      color: #0f172a;
+      border-color: #94a3b8;
+      background: #e2e8f0;
     }
 
     .findings-list { display: flex; flex-direction: column; gap: 1rem; }
@@ -210,9 +216,10 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
       transition: border-color 0.15s ease;
     }
-    .card:hover { border-color: #374151; }
+    .card:hover { border-color: #cbd5e1; }
     .card-header {
       display: flex;
       justify-content: space-between;
@@ -221,21 +228,22 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
       gap: 1rem;
     }
     .card-title-group { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-    .dep-name { font-size: 1.1rem; font-weight: 600; color: #fff; }
+    .dep-name { font-size: 1.1rem; font-weight: 700; color: #0f172a; }
     .pkg-tag {
       font-size: 0.75rem;
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
-      background: #1f2937;
-      color: #d1d5db;
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
       font-family: monospace;
     }
     .eco-tag {
       font-size: 0.75rem;
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
-      background: #374151;
-      color: #e5e7eb;
+      background: #e2e8f0;
+      color: #1e293b;
       text-transform: uppercase;
       font-weight: 600;
     }
@@ -247,25 +255,25 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-    .badge.high { background: var(--high); color: #000; }
-    .badge.medium { background: var(--medium); color: #000; }
-    .badge.low { background: var(--low); color: #fff; }
+    .badge.high { background: var(--high-bg); color: var(--high); border: 1px solid var(--high-border); }
+    .badge.medium { background: var(--medium-bg); color: var(--medium); border: 1px solid var(--medium-border); }
+    .badge.low { background: var(--low-bg); color: var(--low); border: 1px solid var(--low-border); }
 
     .meta-row { display: flex; gap: 1.5rem; font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 0.75rem; flex-wrap: wrap; }
-    .meta-item strong { color: var(--text); font-weight: 500; }
+    .meta-item strong { color: var(--text); font-weight: 600; }
 
     .reasoning {
       font-size: 0.9rem;
-      color: #e5e7eb;
+      color: #334155;
       margin-bottom: 1rem;
       padding: 0.6rem 0.8rem;
-      background: rgba(255, 255, 255, 0.03);
+      background: #f8fafc;
       border-left: 3px solid var(--border);
       border-radius: 0 4px 4px 0;
     }
-    .card.high .reasoning { border-left-color: var(--high); }
-    .card.medium .reasoning { border-left-color: var(--medium); }
-    .card.low .reasoning { border-left-color: var(--low); }
+    .card.high .reasoning { border-left-color: var(--high); background: var(--high-bg); }
+    .card.medium .reasoning { border-left-color: var(--medium); background: var(--medium-bg); }
+    .card.low .reasoning { border-left-color: var(--low); background: var(--low-bg); }
 
     .fix-box {
       background: var(--code-bg);
@@ -278,7 +286,7 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
       gap: 1rem;
     }
     .fix-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--accent); }
-    .fix-code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.875rem; color: #a7f3d0; word-break: break-all; }
+    .fix-code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.875rem; color: #0f172a; word-break: break-all; font-weight: 500; }
     
     .empty-state { text-align: center; padding: 4rem 1rem; color: var(--text-muted); }
   </style>
@@ -287,7 +295,7 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
   <div class="container">
     <header>
       <div class="title-area">
-        <h1>DepDrift Analysis Report <span style="font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 4px; background: #374151; color: #6ee7b7; font-family: monospace; vertical-align: middle; text-transform: uppercase;">[${reportTypeLabel}]</span></h1>
+        <h1>DepDrift Analysis Report <span style="font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 4px; background: #1e293b; color: #ffffff; font-family: monospace; vertical-align: middle; text-transform: uppercase;">[${reportTypeLabel}]</span></h1>
         <p>Generated on ${timestamp}</p>
       </div>
       <div class="stats-bar">
