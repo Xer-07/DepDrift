@@ -20,33 +20,33 @@ export function SuggestedFix({ command, className }: { command: string; classNam
   const { copied, copy } = useCopy();
 
   return (
-    <div className={cn("rounded-lg border border-border bg-panel p-4", className)}>
+    <div className={cn("rounded-xl border border-border/90 bg-panel p-4.5 shadow-panel", className)}>
       <div className="flex items-center gap-2">
         <Terminal className="size-4 text-primary" />
-        <h3 className="text-sm font-semibold tracking-tight">Suggested fix</h3>
+        <h3 className="text-sm font-bold tracking-tight text-foreground">Suggested fix</h3>
       </div>
-      <div className="mt-3 flex items-stretch gap-2 rounded-md border border-border-strong bg-background">
-        <span className="flex select-none items-center border-r border-border px-3 font-mono text-xs text-primary">
+      <div className="mt-3 flex items-stretch gap-2 rounded-lg border border-border-strong bg-background shadow-2xs">
+        <span className="flex select-none items-center border-r border-border/80 px-3.5 font-mono text-xs font-bold text-primary">
           $
         </span>
-        <code className="flex-1 overflow-x-auto whitespace-pre px-1 py-3 font-mono text-[13px] text-foreground">
+        <code className="flex-1 overflow-x-auto whitespace-pre px-2 py-3 font-mono text-[13px] font-medium text-foreground">
           {command}
         </code>
         <button
           type="button"
           onClick={() => copy(command)}
           className={cn(
-            "m-1.5 inline-flex shrink-0 items-center gap-1.5 rounded px-2.5 text-xs font-medium transition-colors",
+            "m-1.5 inline-flex shrink-0 items-center gap-1.5 rounded-md px-3 text-xs font-semibold transition-all active:scale-[0.96]",
             copied
-              ? "bg-ok/15 text-ok"
-              : "bg-panel-raised text-muted-foreground hover:text-foreground",
+              ? "bg-ok/15 text-ok border border-ok/30"
+              : "bg-secondary text-muted-foreground hover:bg-accent hover:text-foreground border border-border/60",
           )}
         >
           {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
-      <p className="mt-2 text-[11px] text-muted-foreground">
+      <p className="mt-2.5 text-[11px] text-muted-foreground font-medium">
         Run from the repository root. Re-scan afterwards to confirm the drift is resolved.
       </p>
     </div>
@@ -56,22 +56,22 @@ export function SuggestedFix({ command, className }: { command: string; classNam
 export function EvidenceList({ evidence }: { evidence: string[] }) {
   const { copied, copy } = useCopy();
   return (
-    <div className="rounded-lg border border-border bg-panel p-4">
+    <div className="rounded-xl border border-border/90 bg-panel p-4.5 shadow-panel">
       <div className="flex items-center gap-2">
         <FileCode2 className="size-4 text-muted-foreground" />
-        <h3 className="text-sm font-semibold tracking-tight">Evidence</h3>
-        <span className="ml-auto font-mono text-[11px] text-muted-foreground">
+        <h3 className="text-sm font-bold tracking-tight text-foreground">Evidence</h3>
+        <span className="ml-auto font-mono text-[11px] font-medium text-muted-foreground">
           {evidence.length} file{evidence.length === 1 ? "" : "s"}
         </span>
       </div>
-      <ul className="mt-3 space-y-1.5">
+      <ul className="mt-3.5 space-y-2">
         {evidence.map((file) => (
           <li key={file}>
             <button
               type="button"
               onClick={() => copy(file)}
               title="Copy path"
-              className="group flex w-full items-center gap-2 rounded border border-border bg-background px-2.5 py-2 text-left font-mono text-xs text-secondary-foreground transition-colors hover:border-border-strong hover:text-foreground"
+              className="group flex w-full items-center gap-2 rounded-lg border border-border/80 bg-background px-3 py-2.5 text-left font-mono text-xs font-medium text-foreground transition-all hover:border-border-strong hover:bg-panel-raised"
             >
               <span className="text-muted-foreground">/</span>
               <span className="truncate">{file}</span>
@@ -80,7 +80,7 @@ export function EvidenceList({ evidence }: { evidence: string[] }) {
           </li>
         ))}
       </ul>
-      {copied && <p className="mt-2 text-[11px] text-ok">Path copied to clipboard</p>}
+      {copied && <p className="mt-2 text-[11px] font-semibold text-ok">Path copied to clipboard</p>}
     </div>
   );
 }

@@ -5,22 +5,12 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * Design system definition — Editorial Warm Off-White / Beige Palette.
  */
 
 @theme inline {
   --font-sans:
-    "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -57,42 +47,42 @@
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-accent: var(--sidebar-accent);
   --color-sidebar-border: var(--sidebar-border);
-  --shadow-panel: 0 1px 0 0 oklch(1 0 0 / 4%) inset, 0 18px 40px -24px oklch(0 0 0 / 80%);
-  --shadow-glow: 0 0 0 1px var(--border-strong), 0 0 28px -8px oklch(0.75 0.14 195 / 35%);
+  --shadow-panel: 0 1px 2px 0 oklch(0 0 0 / 0.04), 0 10px 25px -8px oklch(0 0 0 / 0.06);
+  --shadow-glow: 0 0 0 1px var(--border-strong), 0 12px 28px -6px oklch(0.20 0.015 85 / 0.08);
 }
 
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.168 0.014 244);
-  --panel: oklch(0.213 0.017 246);
-  --panel-raised: oklch(0.243 0.019 248);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.213 0.017 246);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.213 0.017 246);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.78 0.13 196);
-  --primary-foreground: oklch(0.168 0.014 244);
-  --secondary: oklch(0.243 0.019 248);
-  --secondary-foreground: oklch(0.9 0.01 250);
-  --muted: oklch(0.243 0.019 248);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.28 0.035 256);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.62 0.21 25);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.28 0.035 256);
-  --border-strong: oklch(0.36 0.04 250);
-  --input: oklch(0.28 0.035 256);
-  --ring: oklch(0.78 0.13 196);
-  --high: oklch(0.64 0.21 25);
-  --medium: oklch(0.79 0.16 78);
-  --low: oklch(0.68 0.14 245);
-  --ok: oklch(0.72 0.17 155);
-  --sidebar: oklch(0.19 0.015 245);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.26 0.025 250);
-  --sidebar-border: oklch(0.28 0.035 256);
+  --radius: 0.625rem;
+  --background: oklch(0.978 0.007 85);
+  --panel: oklch(1 0 0);
+  --panel-raised: oklch(0.988 0.005 85);
+  --foreground: oklch(0.20 0.015 85);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.20 0.015 85);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.20 0.015 85);
+  --primary: oklch(0.32 0.04 250);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.955 0.008 85);
+  --secondary-foreground: oklch(0.25 0.015 85);
+  --muted: oklch(0.955 0.008 85);
+  --muted-foreground: oklch(0.48 0.02 85);
+  --accent: oklch(0.942 0.01 85);
+  --accent-foreground: oklch(0.18 0.015 85);
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.91 0.008 85);
+  --border-strong: oklch(0.83 0.012 85);
+  --input: oklch(0.91 0.008 85);
+  --ring: oklch(0.32 0.04 250);
+  --high: oklch(0.55 0.22 25);
+  --medium: oklch(0.68 0.18 70);
+  --low: oklch(0.52 0.16 250);
+  --ok: oklch(0.54 0.16 155);
+  --sidebar: oklch(0.962 0.008 85);
+  --sidebar-foreground: oklch(0.20 0.015 85);
+  --sidebar-accent: oklch(0.925 0.012 85);
+  --sidebar-border: oklch(0.89 0.01 85);
 }
 
 @layer base {
@@ -101,23 +91,33 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    letter-spacing: 0.01em;
     -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(ellipse at 50% 0%, oklch(0.99 0.005 85) 0%, transparent 75%),
+      linear-gradient(to right, oklch(0 0 0 / 1.5%) 1px, transparent 1px),
+      linear-gradient(to bottom, oklch(0 0 0 / 1.5%) 1px, transparent 1px);
+    background-size: 100% 100%, 32px 32px, 32px 32px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.018em;
   }
 
   ::selection {
-    background: oklch(0.78 0.13 196 / 25%);
+    background: oklch(0.32 0.04 250 / 15%);
   }
 
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
@@ -125,37 +125,42 @@
   ::-webkit-scrollbar-thumb {
     background: var(--border-strong);
     border-radius: 999px;
-    border: 3px solid transparent;
+    border: 2px solid transparent;
     background-clip: content-box;
   }
 }
 
 @utility grid-backdrop {
   background-image:
-    linear-gradient(to right, oklch(1 0 0 / 3%) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(1 0 0 / 3%) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(to right, oklch(0 0 0 / 2.5%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0 0 0 / 2.5%) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+@utility tracking-label {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 @keyframes dd-fade-up {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: none;
+    transform: translateY(0);
   }
 }
 
 @utility animate-fade-up {
-  animation: dd-fade-up 0.35s ease-out both;
+  animation: dd-fade-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes dd-pulse-ring {
   0%,
   100% {
-    opacity: 0.35;
+    opacity: 0.4;
   }
   50% {
     opacity: 1;
@@ -163,10 +168,10 @@
 }
 
 @utility animate-pulse-ring {
-  animation: dd-pulse-ring 1.6s ease-in-out infinite;
+  animation: dd-pulse-ring 1.8s ease-in-out infinite;
 }
 
-/* React Flow theming */
+/* React Flow theming - Editorial Warm Light */
 .react-flow__attribution {
   display: none;
 }
@@ -174,10 +179,11 @@
   opacity: 0;
 }
 .react-flow .react-flow__controls-button {
-  background: var(--panel-raised);
+  background: var(--panel);
   border-bottom: 1px solid var(--border);
   color: var(--foreground);
   fill: currentColor;
+  transition: background-color 0.15s ease;
 }
 .react-flow .react-flow__controls-button:hover {
   background: var(--accent);
@@ -186,9 +192,8 @@
   fill: var(--foreground);
 }
 .react-flow .react-flow__controls {
-  box-shadow: none;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  box-shadow: 0 4px 12px -2px oklch(0 0 0 / 0.06);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
   overflow: hidden;
 }
-

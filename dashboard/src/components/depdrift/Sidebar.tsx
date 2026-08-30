@@ -15,15 +15,15 @@ export function Sidebar() {
   const summary = summarize(report);
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-sidebar md:flex">
-      <div className="flex items-center gap-2.5 border-b border-sidebar-border px-5 py-4">
-        <div className="flex size-8 items-center justify-center rounded-md border border-border-strong bg-panel-raised">
-          <ShieldCheck className="size-4 text-primary" />
+    <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex">
+      <div className="flex items-center gap-3 border-b border-sidebar-border px-5 py-4">
+        <div className="flex size-9 items-center justify-center rounded-lg border border-border-strong bg-panel shadow-sm">
+          <ShieldCheck className="size-5 text-primary" />
         </div>
         <div className="leading-tight">
-          <div className="font-mono text-sm font-semibold tracking-tight">DepDrift</div>
-          <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-            dependency intel
+          <div className="font-mono text-sm font-semibold tracking-tight text-foreground">DepDrift</div>
+          <div className="text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+            Dependency Intel
           </div>
         </div>
       </div>
@@ -34,16 +34,16 @@ export function Sidebar() {
             key={to}
             to={to}
             activeOptions={{ exact }}
-            className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
+            className="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium text-muted-foreground transition-all active:scale-[0.98] hover:bg-sidebar-accent hover:text-foreground"
             activeProps={{
               className:
-                "!bg-sidebar-accent !text-foreground shadow-[inset_2px_0_0_0_var(--primary)]",
+                "!bg-panel !text-foreground font-semibold shadow-sm border border-border/80 border-l-2 border-l-primary",
             }}
           >
             <Icon className="size-4" />
             <span>{label}</span>
             {label === "Findings" && (
-              <span className="ml-auto rounded border border-border bg-panel px-1.5 font-mono text-[11px] text-muted-foreground">
+              <span className="ml-auto rounded-md border border-border bg-secondary px-2 py-0.5 font-mono text-[10px] font-semibold text-foreground">
                 {summary.total}
               </span>
             )}
@@ -51,14 +51,14 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="m-3 rounded-lg border border-border bg-panel p-3">
-        <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-          Active report
+      <div className="m-3.5 rounded-xl border border-border/90 bg-panel p-3.5 shadow-sm">
+        <div className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
+          Active Report
         </div>
-        <div className="mt-1 truncate font-mono text-xs text-foreground">
+        <div className="mt-1 truncate font-mono text-xs font-medium text-foreground">
           {report.repository.name}
         </div>
-        <div className="mt-3 flex items-center gap-3 text-[11px] font-medium">
+        <div className="mt-3 flex items-center gap-3 text-[11px] font-semibold">
           <span className="text-high">{summary.high} high</span>
           <span className="text-medium">{summary.medium} med</span>
           <span className="text-low">{summary.low} low</span>

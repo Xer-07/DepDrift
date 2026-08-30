@@ -20,14 +20,14 @@ export function CommitTimeline({ report }: { report: DepDriftReport }) {
           <div key={c.hash} className="relative pb-4">
             <span
               className={cn(
-                "absolute -left-6 top-4 flex size-[22px] items-center justify-center rounded-full border bg-background",
-                c.driftIntroduced ? "border-high/60" : "border-border-strong",
+                "absolute -left-6 top-4 flex size-[22px] items-center justify-center rounded-full border bg-background shadow-2xs",
+                c.driftIntroduced ? "border-high/60 bg-high/10" : "border-border-strong bg-panel",
               )}
             >
               <span
                 className={cn(
                   "size-2 rounded-full",
-                  c.driftIntroduced ? "bg-high animate-pulse-ring" : "bg-muted-foreground",
+                  c.driftIntroduced ? "bg-high animate-pulse-ring" : "bg-muted-foreground/60",
                 )}
               />
             </span>
@@ -36,50 +36,50 @@ export function CommitTimeline({ report }: { report: DepDriftReport }) {
               type="button"
               onClick={() => setOpenHash(open ? null : c.hash)}
               className={cn(
-                "w-full rounded-lg border bg-panel px-4 py-3 text-left transition-colors",
-                c.driftIntroduced ? "border-high/35" : "border-border",
-                open && "border-primary/60 shadow-glow",
+                "w-full rounded-xl border bg-panel px-4.5 py-3.5 text-left transition-all active:scale-[0.98] shadow-panel",
+                c.driftIntroduced ? "border-high/35 bg-high/5" : "border-border/90 hover:border-border-strong",
+                open && "border-primary/80 shadow-glow bg-panel",
               )}
             >
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span className="inline-flex items-center gap-1.5 rounded border border-border bg-background px-2 py-0.5 font-mono text-xs text-primary">
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-border/80 bg-secondary px-2 py-0.5 font-mono text-xs font-bold text-primary">
                   <GitCommitHorizontal className="size-3" />
                   {c.hash}
                 </span>
-                <span className="font-mono text-xs text-muted-foreground">{c.date}</span>
+                <span className="font-mono text-xs font-medium text-muted-foreground">{c.date}</span>
                 {c.author && (
-                  <span className="inline-flex items-center gap-1 font-mono text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1 font-mono text-xs font-medium text-muted-foreground">
                     <User className="size-3" />
                     {c.author}
                   </span>
                 )}
                 {c.severity && <SeverityBadge severity={c.severity} />}
                 {c.driftIntroduced ? (
-                  <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-high">
+                  <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.08em] text-high">
                     <AlertTriangle className="size-3" /> drift introduced
                   </span>
                 ) : (
-                  <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-ok">
+                  <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.08em] text-ok">
                     <CheckCircle2 className="size-3" /> clean
                   </span>
                 )}
               </div>
-              {c.message && <div className="mt-1.5 text-sm">{c.message}</div>}
-              <p className="mt-1 font-mono text-[11px] text-secondary-foreground">
+              {c.message && <div className="mt-1.5 text-xs font-semibold text-foreground">{c.message}</div>}
+              <p className="mt-1 font-mono text-[11px] font-medium text-muted-foreground">
                 {c.dependencyChange}
               </p>
 
               {open && (
-                <div className="mt-3 animate-fade-up space-y-3 border-t border-border pt-3">
+                <div className="mt-3.5 animate-fade-up space-y-3 border-t border-border/70 pt-3">
                   <div>
-                    <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       Files changed
                     </div>
                     <div className="mt-1.5 flex flex-wrap gap-1.5">
                       {(c.files ?? ["—"]).map((f) => (
                         <span
                           key={f}
-                          className="inline-flex items-center gap-1 rounded bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground"
+                          className="inline-flex items-center gap-1 rounded-md border border-border/60 bg-secondary px-2 py-0.5 font-mono text-[10px] font-medium text-muted-foreground"
                         >
                           <FileDiff className="size-3" />
                           {f}
@@ -89,7 +89,7 @@ export function CommitTimeline({ report }: { report: DepDriftReport }) {
                   </div>
                   {(c.findingIds ?? []).length > 0 && (
                     <div>
-                      <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                      <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                         Findings traced to this commit
                       </div>
                       <div className="mt-1.5 flex flex-wrap gap-2">
@@ -101,7 +101,7 @@ export function CommitTimeline({ report }: { report: DepDriftReport }) {
                               key={id}
                               to="/findings/$findingId"
                               params={{ findingId: id }}
-                              className="inline-flex items-center gap-2 rounded border border-border bg-background px-2 py-1 font-mono text-[11px] transition-colors hover:border-border-strong"
+                              className="inline-flex items-center gap-2 rounded-lg border border-border/80 bg-background px-2.5 py-1 font-mono text-[11px] font-medium transition-all hover:border-border-strong"
                             >
                               <SeverityBadge severity={f.severity} />
                               {f.dependency}
@@ -120,10 +120,10 @@ export function CommitTimeline({ report }: { report: DepDriftReport }) {
       })}
 
       <div className="relative">
-        <span className="absolute -left-6 top-3 flex size-[22px] items-center justify-center rounded-full border border-primary/60 bg-background">
+        <span className="absolute -left-6 top-3 flex size-[22px] items-center justify-center rounded-full border border-primary/60 bg-primary/10">
           <span className="size-2 rounded-full bg-primary" />
         </span>
-        <div className="rounded-lg border border-primary/40 bg-panel-raised px-4 py-3 font-mono text-xs text-primary">
+        <div className="rounded-xl border border-primary/50 bg-primary/10 px-4 py-3 font-mono text-xs font-bold text-primary shadow-2xs">
           HEAD · current working tree
         </div>
       </div>

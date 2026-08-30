@@ -29,17 +29,17 @@ function Segmented<T extends string>({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">{label}</span>
-      <div className="flex rounded-md border border-border bg-panel p-0.5">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{label}</span>
+      <div className="flex rounded-lg border border-border/80 bg-background p-0.5 shadow-2xs">
         {options.map((o) => (
           <button
             key={o.value}
             type="button"
             onClick={() => onChange(o.value)}
             className={cn(
-              "rounded px-2.5 py-1 text-xs transition-colors",
+              "rounded-md px-2.5 py-1 text-xs font-medium transition-all active:scale-[0.97]",
               value === o.value
-                ? "bg-panel-raised text-foreground shadow-[inset_0_0_0_1px_var(--border-strong)]"
+                ? "bg-panel text-foreground font-semibold shadow-xs border border-border/60"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -63,14 +63,14 @@ export function FilterBar({
   const set = (patch: Partial<Filters>) => onChange({ ...filters, ...patch });
 
   return (
-    <div className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-3">
+    <div className="flex flex-wrap items-center gap-3 border-b border-border/80 bg-panel-raised/50 px-4.5 py-3">
       <div className="relative min-w-[220px] flex-1">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/80" />
         <input
           value={filters.query}
           onChange={(e) => set({ query: e.target.value })}
           placeholder="Search dependency, package, reasoning, commit…"
-          className="w-full rounded-md border border-border bg-background py-2 pl-9 pr-3 font-mono text-xs text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary/60 focus:ring-2 focus:ring-ring/25"
+          className="w-full rounded-lg border border-border/80 bg-panel py-2 pl-9 pr-3 font-mono text-xs text-foreground outline-none transition-all placeholder:text-muted-foreground/70 focus:border-primary/80 focus:ring-2 focus:ring-primary/15"
         />
       </div>
 
@@ -98,11 +98,11 @@ export function FilterBar({
       />
 
       <div className="flex items-center gap-2">
-        <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Type</span>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Type</span>
         <select
           value={filters.type}
           onChange={(e) => set({ type: e.target.value as Filters["type"] })}
-          className="rounded-md border border-border bg-panel px-2 py-1.5 text-xs text-foreground outline-none focus:border-primary/60"
+          className="rounded-lg border border-border/80 bg-panel px-2.5 py-1.5 font-sans text-xs font-medium text-foreground outline-none transition-all focus:border-primary/80"
         >
           <option value="ALL">All types</option>
           {(Object.keys(DRIFT_TYPE_LABEL) as DriftType[]).map((t) => (
@@ -113,7 +113,7 @@ export function FilterBar({
         </select>
       </div>
 
-      <span className="ml-auto font-mono text-[11px] text-muted-foreground">
+      <span className="ml-auto font-mono text-[11px] font-semibold text-muted-foreground">
         {resultCount} result{resultCount === 1 ? "" : "s"}
       </span>
     </div>

@@ -3,9 +3,9 @@ import type { DriftType, Ecosystem, Severity } from "@/lib/depdrift/types";
 import { DRIFT_TYPE_LABEL } from "@/lib/depdrift/types";
 
 const SEVERITY_CLASS: Record<Severity, string> = {
-  HIGH: "border-high/40 bg-high/12 text-high",
-  MEDIUM: "border-medium/40 bg-medium/12 text-medium",
-  LOW: "border-low/40 bg-low/12 text-low",
+  HIGH: "border-high/30 bg-high/10 text-high font-semibold",
+  MEDIUM: "border-medium/30 bg-medium/10 text-medium font-semibold",
+  LOW: "border-low/30 bg-low/10 text-low font-semibold",
 };
 
 export function SeverityBadge({
@@ -20,8 +20,8 @@ export function SeverityBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded border font-mono font-medium uppercase tracking-wider",
-        size === "sm" ? "px-1.5 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs",
+        "inline-flex items-center gap-1.5 rounded-md border font-mono tracking-[0.08em] uppercase",
+        size === "sm" ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs",
         SEVERITY_CLASS[severity],
         className,
       )}
@@ -36,7 +36,7 @@ export function TypeBadge({ type, className }: { type: DriftType; className?: st
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded border border-border bg-panel-raised px-1.5 py-0.5 font-mono text-[10px] text-secondary-foreground",
+        "inline-flex items-center rounded-md border border-border/80 bg-secondary px-2 py-0.5 font-mono text-[10px] font-medium text-foreground",
         className,
       )}
     >
@@ -47,7 +47,7 @@ export function TypeBadge({ type, className }: { type: DriftType; className?: st
 
 export function EcosystemBadge({ ecosystem }: { ecosystem: Ecosystem }) {
   return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
+    <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-medium text-muted-foreground">
       <span
         className={cn(
           "size-1.5 rounded-full",

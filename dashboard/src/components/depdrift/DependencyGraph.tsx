@@ -54,12 +54,12 @@ function GraphInner({ report }: { report: DepDriftReport }) {
         animated: e.state !== "declared",
         style: {
           stroke: EDGE_COLOR[e.state],
-          strokeWidth: 1.6,
+          strokeWidth: 1.8,
           strokeDasharray: e.state === "missing" ? "5 4" : undefined,
         },
-        labelStyle: { fill: "var(--muted-foreground)", fontSize: 10, fontFamily: "var(--font-mono)" },
-        labelBgStyle: { fill: "var(--background)" },
-        labelBgPadding: [4, 2] as [number, number],
+        labelStyle: { fill: "var(--muted-foreground)", fontSize: 10, fontFamily: "var(--font-mono)", fontWeight: 500 },
+        labelBgStyle: { fill: "var(--panel)" },
+        labelBgPadding: [6, 3] as [number, number],
         markerEnd: { type: MarkerType.ArrowClosed, color: EDGE_COLOR[e.state], width: 14, height: 14 },
       })),
     [report],
@@ -71,7 +71,7 @@ function GraphInner({ report }: { report: DepDriftReport }) {
   );
 
   return (
-    <div className="relative h-[520px] w-full">
+    <div className="relative h-[520px] w-full bg-background/50">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -83,13 +83,13 @@ function GraphInner({ report }: { report: DepDriftReport }) {
         minZoom={0.3}
         maxZoom={1.8}
       >
-        <Background variant={BackgroundVariant.Dots} gap={22} size={1} color="var(--border)" />
-        <Controls className="!border !border-border !bg-panel !shadow-panel" showInteractive={false} />
+        <Background variant={BackgroundVariant.Dots} gap={24} size={1.2} color="var(--border-strong)" />
+        <Controls className="!border !border-border/80 !bg-panel !shadow-panel" showInteractive={false} />
         <MiniMap
           pannable
           zoomable
-          maskColor="oklch(0.168 0.014 244 / 70%)"
-          style={{ background: "var(--panel)", border: "1px solid var(--border)" }}
+          maskColor="oklch(0.978 0.007 85 / 65%)"
+          style={{ background: "var(--panel)", border: "1px solid var(--border-strong)", borderRadius: "8px" }}
           nodeColor={(n) => {
             const status = (n.data as { status?: string }).status;
             if (status === "missing") return "var(--high)";
@@ -101,10 +101,10 @@ function GraphInner({ report }: { report: DepDriftReport }) {
       </ReactFlow>
 
       {selected && (
-        <div className="absolute right-4 top-4 w-72 animate-fade-up rounded-lg border border-border-strong bg-panel p-4 shadow-panel">
+        <div className="absolute right-4 top-4 w-76 animate-fade-up rounded-xl border border-border/90 bg-panel p-4.5 shadow-glow">
           <div className="flex items-start gap-2">
             <div className="min-w-0">
-              <div className="truncate font-mono text-sm font-medium">{selected.label}</div>
+              <div className="truncate font-mono text-sm font-bold text-foreground">{selected.label}</div>
               <div className="mt-0.5 font-mono text-[11px] text-muted-foreground">
                 {selected.ecosystem} · {selected.kind} · {selected.version ?? "—"}
               </div>
@@ -112,13 +112,13 @@ function GraphInner({ report }: { report: DepDriftReport }) {
             <button
               type="button"
               onClick={() => setSelectedId(null)}
-              className="ml-auto rounded p-1 text-muted-foreground hover:bg-panel-raised hover:text-foreground"
+              className="ml-auto rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             >
               <X className="size-3.5" />
             </button>
           </div>
 
-          <div className="mt-3 space-y-2">
+          <div className="mt-3.5 space-y-2">
             {related.length === 0 && (
               <p className="text-xs text-muted-foreground">No drift recorded for this node.</p>
             )}
@@ -127,13 +127,13 @@ function GraphInner({ report }: { report: DepDriftReport }) {
                 key={f.id}
                 to="/findings/$findingId"
                 params={{ findingId: f.id }}
-                className="block rounded border border-border bg-background px-2.5 py-2 transition-colors hover:border-border-strong"
+                className="block rounded-lg border border-border/80 bg-background px-3 py-2.5 transition-all hover:border-border-strong hover:bg-panel-raised"
               >
                 <div className="flex items-center gap-2">
                   <SeverityBadge severity={f.severity} />
-                  <span className="truncate font-mono text-[11px]">{f.fromPackage}</span>
+                  <span className="truncate font-mono text-[11px] font-semibold">{f.fromPackage}</span>
                 </div>
-                <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
+                <p className="mt-1.5 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
                   {f.reasoning}
                 </p>
               </Link>
@@ -147,16 +147,16 @@ function GraphInner({ report }: { report: DepDriftReport }) {
 
 export function DependencyGraph({ report }: { report: DepDriftReport }) {
   return (
-    <section className="overflow-hidden rounded-lg border border-border bg-panel shadow-panel">
-      <div className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-3">
+    <section className="overflow-hidden rounded-xl border border-border/90 bg-panel shadow-panel">
+      <div className="flex flex-wrap items-center gap-3 border-b border-border/80 bg-panel-raised/50 px-5 py-3.5">
         <Network className="size-4 text-primary" />
         <div>
-          <h2 className="text-sm font-semibold tracking-tight">Dependency Graph</h2>
+          <h2 className="text-sm font-bold tracking-tight text-foreground">Dependency Graph</h2>
           <p className="text-xs text-muted-foreground">
             Package relationships and detected dependency drift
           </p>
         </div>
-        <div className="ml-auto flex flex-wrap items-center gap-3 font-mono text-[11px] text-muted-foreground">
+        <div className="ml-auto flex flex-wrap items-center gap-3.5 font-mono text-[11px] font-medium text-muted-foreground">
           <Legend color="var(--ok)" label="declared & used" />
           <Legend color="var(--high)" label="missing" />
           <Legend color="var(--medium)" label="version conflict" />
@@ -164,7 +164,7 @@ export function DependencyGraph({ report }: { report: DepDriftReport }) {
       </div>
       <ClientOnly
         fallback={
-          <div className="flex h-[520px] items-center justify-center text-xs text-muted-foreground">
+          <div className="flex h-[520px] items-center justify-center text-xs font-medium text-muted-foreground">
             Rendering graph…
           </div>
         }
@@ -178,7 +178,7 @@ export function DependencyGraph({ report }: { report: DepDriftReport }) {
 function Legend({ color, label }: { color: string; label: string }) {
   return (
     <span className="inline-flex items-center gap-1.5">
-      <span className="h-0.5 w-4 rounded-full" style={{ background: color }} />
+      <span className="h-1 w-3.5 rounded-full" style={{ background: color }} />
       {label}
     </span>
   );

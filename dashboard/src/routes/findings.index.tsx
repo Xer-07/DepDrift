@@ -39,14 +39,14 @@ function FindingsPage() {
   );
 
   return (
-    <div>
+    <div className="animate-fade-up">
       <TopHeader
         title="Findings"
         subtitle="Every dependency drift detected in the active report."
         actions={<DemoFixtureSelector />}
       />
       <div className="px-5 py-6 md:px-8">
-        <section className="overflow-hidden rounded-lg border border-border bg-panel shadow-panel">
+        <section className="overflow-hidden rounded-xl border border-border/90 bg-panel shadow-panel">
           <FilterBar filters={filters} onChange={setFilters} resultCount={findings.length} />
           <FindingTable findings={findings} />
         </section>

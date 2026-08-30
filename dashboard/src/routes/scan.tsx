@@ -54,14 +54,14 @@ function ScanPage() {
   };
 
   return (
-    <div>
+    <div className="animate-fade-up">
       <TopHeader
         title="Scan Repository"
         subtitle="Analyze dependency health, drift, and historical changes."
       />
 
-      <div className="grid gap-5 px-5 py-6 md:px-8 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="space-y-4">
+      <div className="grid gap-6 px-5 py-6 md:px-8 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="space-y-5">
           <RepositoryInput
             mode={mode}
             onModeChange={setMode}
@@ -71,29 +71,28 @@ function ScanPage() {
             scanning={scanning}
           />
 
-          <div className="rounded-lg border border-border bg-panel p-5">
-            <h2 className="text-sm font-semibold tracking-tight">Demo fixtures</h2>
+          <div className="rounded-xl border border-border/90 bg-panel p-5 shadow-panel">
+            <h2 className="text-sm font-bold tracking-tight text-foreground">Demo fixtures</h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               Load one of the bundled fixture reports to explore the dashboard instantly.
             </p>
-            <div className="mt-3">
+            <div className="mt-3.5">
               <DemoFixtureSelector variant="grid" />
             </div>
           </div>
 
-          <div className="rounded-lg border border-border bg-panel p-5">
+          <div className="rounded-xl border border-border/90 bg-panel p-5 shadow-panel">
             <div className="flex items-center gap-2">
               <Terminal className="size-4 text-primary" />
-              <h2 className="text-sm font-semibold tracking-tight">Equivalent CLI invocation</h2>
+              <h2 className="text-sm font-bold tracking-tight text-foreground">Equivalent CLI invocation</h2>
             </div>
-            <pre className="mt-3 overflow-x-auto rounded-md border border-border-strong bg-background p-3 font-mono text-xs text-secondary-foreground">
+            <pre className="mt-3.5 overflow-x-auto rounded-lg border border-border-strong bg-background p-3.5 font-mono text-xs font-medium text-foreground shadow-2xs">
               {`depdrift scan ${value || "<repository>"} \\
   --history \\
   --out depdrift-report.json`}
             </pre>
-            <p className="mt-2 text-[11px] text-muted-foreground">
-              This dashboard renders the JSON report produced by that command. Today it reads
-              bundled fixture data through <span className="font-mono">loadReport()</span>.
+            <p className="mt-2.5 text-[11px] font-medium text-muted-foreground">
+              This dashboard renders the JSON report produced by that command.
             </p>
           </div>
         </div>
@@ -102,8 +101,8 @@ function ScanPage() {
           {step >= 0 ? (
             <ScanProgress step={step} target={value} />
           ) : (
-            <div className="grid-backdrop rounded-lg border border-dashed border-border bg-panel/40 p-8 text-center">
-              <p className="text-sm text-muted-foreground">
+            <div className="grid-backdrop rounded-xl border border-dashed border-border-strong/70 bg-panel/50 p-8 text-center shadow-panel">
+              <p className="text-sm font-medium text-muted-foreground">
                 Awaiting a repository. Progress and detected ecosystems will appear here.
               </p>
             </div>

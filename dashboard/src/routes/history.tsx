@@ -28,19 +28,19 @@ function HistoryPage() {
   const summary = summarize(report);
 
   return (
-    <div>
+    <div className="animate-fade-up">
       <TopHeader
         title="Git History"
         subtitle="Trace exactly when dependency drift was introduced."
         actions={<DemoFixtureSelector />}
       />
-      <div className="grid gap-5 px-5 py-6 md:px-8 xl:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="grid gap-6 px-5 py-6 md:px-8 xl:grid-cols-[minmax(0,1fr)_320px]">
         <CommitTimeline report={report} />
 
-        <aside className="space-y-3">
-          <div className="rounded-lg border border-border bg-panel p-4">
-            <h2 className="text-sm font-semibold tracking-tight">History summary</h2>
-            <dl className="mt-3 space-y-2 text-xs">
+        <aside className="space-y-4">
+          <div className="rounded-xl border border-border/90 bg-panel p-4.5 shadow-panel">
+            <h2 className="text-sm font-bold tracking-tight text-foreground">History summary</h2>
+            <dl className="mt-3.5 space-y-2.5 text-xs font-medium">
               <Row label="Commits analyzed" value={String(report.history.length)} />
               <Row label="Drift commits" value={String(summary.driftCommits)} />
               <Row label="Branch" value={report.repository.branch} />
@@ -54,10 +54,10 @@ function HistoryPage() {
               />
             </dl>
           </div>
-          <div className="rounded-lg border border-border bg-panel p-4 text-xs text-muted-foreground">
+          <div className="rounded-xl border border-border/90 bg-panel p-4.5 text-xs text-muted-foreground font-medium shadow-panel">
             Commit attribution comes from the report&apos;s{" "}
-            <span className="font-mono text-foreground">history[]</span> array — blame is computed
-            by the CLI, not the dashboard.
+            <span className="font-mono text-foreground font-semibold">history[]</span> array — blame is computed
+            by the CLI.
           </div>
         </aside>
       </div>
@@ -69,7 +69,7 @@ function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-3">
       <dt className="text-muted-foreground">{label}</dt>
-      <dd className="font-mono text-foreground">{value}</dd>
+      <dd className="font-mono font-semibold text-foreground">{value}</dd>
     </div>
   );
 }
