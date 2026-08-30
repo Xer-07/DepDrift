@@ -9,8 +9,15 @@ import type { DepDriftReport, Finding, Severity } from "./types";
  * the parsed JSON through `adaptReport()` — no UI component needs to change.
  */
 export async function loadReport(fixture: FixtureId = "polyglot"): Promise<DepDriftReport> {
-  // const raw = await fetch("/depdrift-report.json").then((r) => r.json());
-  // return adaptReport(raw);
+  try {
+    const res = await fetch("/depdrift-report.json");
+    if (res.ok) {
+      const raw = await res.json();
+      return adaptReport(raw);
+    }
+  } catch {
+    // fallback to mock fixture if live JSON not served
+  }
   return adaptReport(MOCK_REPORTS[fixture]);
 }
 

@@ -269,6 +269,8 @@ function getBasePackageName(specifier: string): string | null {
   if (specifier.startsWith("node:")) return null;
   if (NODE_BUILTINS.has(specifier) || NODE_BUILTINS.has(specifier.split("/")[0])) return null;
 
+  if (specifier.startsWith("@/")) return null;
+
   if (specifier.startsWith("@")) {
     const parts = specifier.split("/");
     if (parts.length >= 2) {
