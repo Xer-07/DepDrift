@@ -25,25 +25,31 @@ export function markScanned() {
   emit();
 }
 
+const getSnapshot = () => currentFixture;
+const getServerSnapshot = () => "polyglot";
+
 export function useFixture() {
   const id = useSyncExternalStore(
     subscribe,
-    () => currentFixture,
-    () => currentFixture,
+    getSnapshot,
+    getServerSnapshot,
   );
   const select = useCallback((next: FixtureId) => setFixture(next), []);
   return [id, select] as const;
 }
 
+const getScannedSnapshot = () => scanned;
+const getScannedServerSnapshot = () => false;
+
 export function useHasScanned() {
   return useSyncExternalStore(
     subscribe,
-    () => scanned,
-    () => false,
+    getScannedSnapshot,
+    getScannedServerSnapshot,
   );
 }
 
 export function useReport() {
   const [fixture] = useFixture();
-  return useMemo(() => getReport(fixture), [fixture]);
+  return getReport(fixture);
 }

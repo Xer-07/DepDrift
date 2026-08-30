@@ -39,6 +39,8 @@ export function adaptReport(raw: unknown): DepDriftReport {
     scannedAt: new Date().toISOString(),
     ecosystems: ["node", "python"],
   };
+  let graphData = { nodes: [], edges: [] };
+  let historyData: any[] = [];
 
   if (Array.isArray(raw)) {
     findingsList = raw as Finding[];
@@ -46,6 +48,8 @@ export function adaptReport(raw: unknown): DepDriftReport {
     const reportObj = raw as Partial<DepDriftReport> & Record<string, unknown>;
     findingsList = (reportObj.findings ?? []) as Finding[];
     if (reportObj.repository) repositoryInfo = reportObj.repository;
+    if (reportObj.graph) graphData = reportObj.graph as any;
+    if (reportObj.history) historyData = reportObj.history as any[];
   }
 
   return {
@@ -57,8 +61,8 @@ export function adaptReport(raw: unknown): DepDriftReport {
       evidence: f.evidence ?? [],
       severity: (f.severity?.toUpperCase?.() as Severity) ?? "LOW",
     })),
-    graph: report.graph ?? { nodes: [], edges: [] },
-    history: report.history ?? [],
+    graph: graphData,
+    history: historyData,
   };
 }
 
