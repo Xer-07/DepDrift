@@ -1,0 +1,69 @@
+import { MOCK_REPORTS, type FixtureId } from "./fixtures";
+import type { DepDriftReport, Finding, Severity } from "./types";
+
+/**
+ * Report adapter.
+ *
+ * Today `loadReport()` resolves bundled mock fixtures. To switch to the real
+ * CLI output, replace the body with a fetch of `depdrift-report.json` and pass
+ * the parsed JSON through `adaptReport()` — no UI component needs to change.
+ */
+export async function loadReport(fixture: FixtureId = "polyglot"): Promise<DepDriftReport> {
+  // const raw = await fetch("/depdrift-report.json").then((r) => r.json());
+  // return adaptReport(raw);
+  return adaptReport(MOCK_REPORTS[fixture]);
+}
+
+export function getReport(fixture: FixtureId = "polyglot"): DepDriftReport {
+  return adaptReport(MOCK_REPORTS[fixture]);
+}
+
+/**
+ * Normalizes a raw `depdrift-report.json` payload into the UI model.
+ * Tolerates snake_case keys and missing optional collections so that schema
+ * drift in the CLI does not crash the dashboard.
+ */
+export function adaptReport(raw: unknown): DepDriftReport {
+  const report = raw as Partial<DepDriftReport> & Record<string, unknown>;
+  const findings = (report.findings ?? []) as Finding[];
+
+  return {
+    version: report.version ?? "unknown",
+    repository: report.repository ?? {
+      name: "unknown",
+      source: "—",
+      branch: "main",
+      scannedAt: new Date().toISOString(),
+      ecosystems: [],
+    },
+    findings: findings.map((f, i) => ({
+      ...f,
+      id: f.id ?? `finding-${i}`,
+      evidence: f.evidence ?? [],
+      severity: (f.severity?.toUpperCase?.() as Severity) ?? "LOW",
+    })),
+    graph: report.graph ?? { nodes: [], edges: [] },
+    history: report.history ?? [],
+  };
+}
+
+export interface ReportSummary {
+  high: number;
+  medium: number;
+  low: number;
+  total: number;
+  packages: number;
+  driftCommits: number;
+}
+
+export function summarize(report: DepDriftReport): ReportSummary {
+  const count = (s: Severity) => report.findings.filter((f) => f.severity === s).length;
+  return {
+    high: count("HIGH"),
+    medium: count("MEDIUM"),
+    low: count("LOW"),
+    total: report.findings.length,
+    packages: new Set(report.findings.map((f) => f.fromPackage)).size,
+    driftCommits: report.history.filter((c) => c.driftIntroduced).length,
+  };
+}
