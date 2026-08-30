@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import { ingestRepo } from "./ingest";
 import { getActiveDetectors } from "./detectors";
 import { analyzeVersionDrift } from "./version-drift";
@@ -6,6 +7,8 @@ import { generateReport } from "./report";
 import { enrichFindingsWithAI } from "./ai";
 import { ActualEdge, DeclaredEdge, Finding } from "./types";
 import { AIEnhancedFinding } from "./ai/types";
+
+dotenv.config();
 
 async function main() {
   const args = process.argv.slice(2);

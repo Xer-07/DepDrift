@@ -6,3 +6,6 @@ reports/*
 !reports/*/.gitkeep
 docusaurus-test
 .DS_Store
+.env
+.env.local
+.env.*.local
