@@ -25,7 +25,7 @@ async function main() {
   console.log(`\nStarting DepDrift scan on target: ${target}`);
 
   const ingest = await ingestRepo(target);
-  const repoRoot = ingest.repoPath;
+  const repoRoot = ingest.repoRoot;
 
   try {
     const detectors = getActiveDetectors(repoRoot);

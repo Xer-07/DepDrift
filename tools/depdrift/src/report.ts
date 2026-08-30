@@ -114,7 +114,7 @@ function printFinding(f: AIEnhancedFinding) {
     console.log(`  Evidence: ${f.evidence.join(", ")}`);
   }
   if (f.introducedInCommit) {
-    console.log(`  Commit: ${f.introducedInCommit.hash.slice(0, 7)} (${f.introducedInCommit.date}) by ${f.introducedInCommit.author}`);
+    console.log(`  Commit: ${f.introducedInCommit.hash.slice(0, 7)} (${f.introducedInCommit.date})`);
   }
   console.log(`  Suggested Fix: ${chalk.green(f.aiAnalysis?.recommendedFix || f.suggestedFix)}`);
 }

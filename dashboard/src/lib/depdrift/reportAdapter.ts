@@ -31,19 +31,27 @@ export function getReport(fixture: FixtureId = "polyglot"): DepDriftReport {
  * drift in the CLI does not crash the dashboard.
  */
 export function adaptReport(raw: unknown): DepDriftReport {
-  const report = raw as Partial<DepDriftReport> & Record<string, unknown>;
-  const findings = (report.findings ?? []) as Finding[];
+  let findingsList: Finding[] = [];
+  let repositoryInfo = {
+    name: "DepDrift Workspace",
+    source: "local",
+    branch: "main",
+    scannedAt: new Date().toISOString(),
+    ecosystems: ["node", "python"],
+  };
+
+  if (Array.isArray(raw)) {
+    findingsList = raw as Finding[];
+  } else if (raw && typeof raw === "object") {
+    const reportObj = raw as Partial<DepDriftReport> & Record<string, unknown>;
+    findingsList = (reportObj.findings ?? []) as Finding[];
+    if (reportObj.repository) repositoryInfo = reportObj.repository;
+  }
 
   return {
-    version: report.version ?? "unknown",
-    repository: report.repository ?? {
-      name: "unknown",
-      source: "—",
-      branch: "main",
-      scannedAt: new Date().toISOString(),
-      ecosystems: [],
-    },
-    findings: findings.map((f, i) => ({
+    version: "1.0.0",
+    repository: repositoryInfo,
+    findings: findingsList.map((f, i) => ({
       ...f,
       id: f.id ?? `finding-${i}`,
       evidence: f.evidence ?? [],
