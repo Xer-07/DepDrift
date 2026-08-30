@@ -105,9 +105,9 @@ function printFinding(f: AIEnhancedFinding) {
   console.log(`  Type: ${f.type}`);
   console.log(`  Reasoning: ${f.reasoning}`);
   if (f.aiAnalysis) {
-    console.log(`  🤖 AI Explanation: ${chalk.white(f.aiAnalysis.explanation)}`);
+    console.log(`  AI Explanation: ${chalk.white(f.aiAnalysis.explanation)}`);
     if (f.aiAnalysis.impact) {
-      console.log(`  ⚠️  AI Impact: ${chalk.yellow(f.aiAnalysis.impact)}`);
+      console.log(`  AI Impact: ${chalk.yellow(f.aiAnalysis.impact)}`);
     }
   }
   if (f.evidence && f.evidence.length > 0) {
@@ -372,7 +372,7 @@ function generateHtmlReport(findings: AIEnhancedFinding[], reportType: ReportTyp
       container.innerHTML = filtered.map(f => {
         const evHtml = f.evidence && f.evidence.length ? '<div class="meta-item"><strong>Evidence:</strong> ' + escapeHtml(f.evidence.join(', ')) + '</div>' : '';
         const commitHtml = f.introducedInCommit ? '<div class="meta-item"><strong>Introduced in:</strong> ' + escapeHtml(f.introducedInCommit.hash.slice(0, 7)) + ' (' + escapeHtml(f.introducedInCommit.date) + ')</div>' : '';
-        const aiHtml = f.aiAnalysis ? '<div class="ai-box"><div class="ai-title">🤖 AI Analysis</div><div>' + escapeHtml(f.aiAnalysis.explanation) + '</div>' + (f.aiAnalysis.impact ? '<div style="margin-top:0.25rem; font-weight:600;">Impact: ' + escapeHtml(f.aiAnalysis.impact) + '</div>' : '') + '</div>' : '';
+        const aiHtml = f.aiAnalysis ? '<div class="ai-box"><div class="ai-title">AI Analysis</div><div>' + escapeHtml(f.aiAnalysis.explanation) + '</div>' + (f.aiAnalysis.impact ? '<div style="margin-top:0.25rem; font-weight:600;">Impact: ' + escapeHtml(f.aiAnalysis.impact) + '</div>' : '') + '</div>' : '';
 
         const fixText = f.aiAnalysis && f.aiAnalysis.recommendedFix ? f.aiAnalysis.recommendedFix : f.suggestedFix;
 

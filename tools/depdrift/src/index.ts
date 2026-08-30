@@ -56,7 +56,7 @@ async function main() {
     let markdownSummary: string | undefined;
 
     if (aiFlag) {
-      console.log("\n🤖 Running AI Analysis & Remediation Generation...");
+      console.log("\nRunning AI Analysis for ambiguous findings...");
       const aiResult = await enrichFindingsWithAI(findings, { repoRoot });
       finalFindings = aiResult.findings;
       markdownSummary = aiResult.markdownSummary;
