@@ -3,107 +3,86 @@ import { getActiveDetectors } from "./detectors";
 import { analyzeVersionDrift } from "./version-drift";
 import { annotateGitHistory } from "./git-history";
 import { generateReport } from "./report";
-import { ScanOptions } from "./types";
-
-function parseArgs(args: string[]): { command: string; options: ScanOptions } {
-  const result: ScanOptions = {
-    inputPath: ".",
-    history: false,
-    commits: 20,
-  };
-
-  let command = "scan";
-  const positional: string[] = [];
-
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === "--history") {
-      result.history = true;
-    } else if (arg.startsWith("--commits=")) {
-      const val = parseInt(arg.split("=")[1], 10);
-      if (!isNaN(val)) result.commits = val;
-    } else if (arg === "--commits" && i + 1 < args.length) {
-      const val = parseInt(args[++i], 10);
-      if (!isNaN(val)) result.commits = val;
-    } else if (!arg.startsWith("-")) {
-      positional.push(arg);
-    }
-  }
-
-  if (positional.length > 0) {
-    command = positional[0];
-  }
-  if (positional.length > 1) {
-    result.inputPath = positional[1];
-  }
-
-  return { command, options: result };
-}
+import { enrichFindingsWithAI } from "./ai";
+import { ActualEdge, DeclaredEdge, Finding } from "./types";
+import { AIEnhancedFinding } from "./ai/types";
 
 async function main() {
-  const rawArgs = process.argv.slice(2);
-  const { command, options } = parseArgs(rawArgs);
+  const args = process.argv.slice(2);
+  const command = args[0];
 
   if (command !== "scan") {
-    console.log("Usage: depdrift scan <path-or-github-url> [--history] [--commits=20]");
+    console.log("Usage: depdrift scan <path-or-github-url> [--history] [--commits=20] [--ai]");
     process.exit(0);
   }
 
-  console.log(`\nStarting DepDrift scan on target: ${options.inputPath}`);
+  const target = args.find((a) => !a.startsWith("--") && a !== command) || ".";
+  const historyFlag = args.includes("--history");
+  const aiFlag = args.includes("--ai");
+  const commitsArg = args.find((a) => a.startsWith("--commits="));
+  const maxCommits = commitsArg ? parseInt(commitsArg.split("=")[1], 10) || 20 : 20;
 
-  let ingestResult;
-  try {
-    ingestResult = await ingestRepo(options.inputPath);
-  } catch (err: any) {
-    console.error(`Error: Ingestion failed: ${err.message}`);
-    process.exit(1);
-  }
+  console.log(`\nStarting DepDrift scan on target: ${target}`);
 
-  const { repoRoot, cleanup } = ingestResult;
+  const ingest = await ingestRepo(target);
+  const repoRoot = ingest.repoPath;
 
   try {
     const detectors = getActiveDetectors(repoRoot);
     if (detectors.length === 0) {
       console.log("Warning: No supported ecosystems (Node or Python) detected in target repository.");
-      cleanup();
+      if (ingest.cleanup) await ingest.cleanup();
       process.exit(0);
     }
 
-    console.log(`Detected ecosystem(s): ${detectors.map(d => d.ecosystem).join(", ")}`);
+    console.log(`Detected ecosystem(s): ${detectors.map((d) => d.ecosystem).join(", ")}`);
 
-    const actualEdges = detectors.flatMap(d => d.extractActualGraph(repoRoot));
-    const declaredEdges = detectors.flatMap(d => d.extractDeclaredGraph(repoRoot));
+    let declaredGraph: DeclaredEdge[] = [];
+    let actualGraph: ActualEdge[] = [];
 
-    let findings = analyzeVersionDrift(actualEdges, declaredEdges);
+    for (const detector of detectors) {
+      declaredGraph = declaredGraph.concat(detector.extractDeclaredGraph(repoRoot));
+      actualGraph = actualGraph.concat(detector.extractActualGraph(repoRoot));
+    }
 
-    if (options.history) {
-      findings = await annotateGitHistory(repoRoot, findings, options.commits);
+    let findings: Finding[] = analyzeVersionDrift(actualGraph, declaredGraph);
+
+    if (historyFlag) {
+      console.log(`Analyzing git commit history (top ${maxCommits} commits)...`);
+      findings = await annotateGitHistory(repoRoot, findings, maxCommits);
+    }
+
+    let finalFindings: AIEnhancedFinding[] = findings;
+    let markdownSummary: string | undefined;
+
+    if (aiFlag) {
+      console.log("\n🤖 Running AI Analysis & Remediation Generation...");
+      const aiResult = await enrichFindingsWithAI(findings, { repoRoot });
+      finalFindings = aiResult.findings;
+      markdownSummary = aiResult.markdownSummary;
     }
 
     let reportType: "local" | "github" | "history" = "local";
-    if (options.history) {
+    if (historyFlag) {
       reportType = "history";
-    } else if (ingestResult.isTemp) {
+    } else if (ingest.isTemp) {
       reportType = "github";
-    } else {
-      reportType = "local";
     }
 
-    generateReport(findings, reportType);
+    generateReport(finalFindings, reportType, process.cwd(), markdownSummary);
 
-    const hasHighSeverity = findings.some(f => f.severity === "high");
-    cleanup();
+    const hasHighSeverity = finalFindings.some((f) => f.severity === "high");
+    if (ingest.cleanup) await ingest.cleanup();
 
-    if (hasHighSeverity) {
-      process.exit(1);
-    } else {
-      process.exit(0);
-    }
+    process.exit(hasHighSeverity ? 1 : 0);
   } catch (err: any) {
     console.error(`Error: Scan error: ${err.message}`);
-    cleanup();
+    if (ingest.cleanup) await ingest.cleanup();
     process.exit(1);
   }
 }
 
-main();
+main().catch((err) => {
+  console.error("Fatal error:", err);
+  process.exit(1);
+});

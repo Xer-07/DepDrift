@@ -1,15 +1,17 @@
-import fs from "node:fs";
-import path from "node:path";
+import * as fs from "fs";
+import * as path from "path";
 import chalk from "chalk";
 import { Finding } from "./types";
+import { AIEnhancedFinding } from "./ai/types";
 
 export type ReportType = "local" | "github" | "history";
 
 export function generateReport(
-  findings: Finding[],
+  findings: AIEnhancedFinding[],
   reportType: ReportType = "local",
-  baseDir: string = process.cwd()
-): string {
+  baseDir: string = process.cwd(),
+  markdownSummary?: string
+): void {
   const outputDir = path.join(baseDir, "reports", reportType);
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
@@ -19,96 +21,112 @@ export function generateReport(
   const jsonPath = path.join(outputDir, "depdrift-report.json");
   fs.writeFileSync(jsonPath, JSON.stringify(findings, null, 2), "utf8");
 
+  // Also mirror json report at repository root or reports/local/ for easy fetching by dashboard if needed
+  const localJsonPath = path.join(baseDir, "reports", "local", "depdrift-report.json");
+  if (jsonPath !== localJsonPath) {
+    const localDir = path.dirname(localJsonPath);
+    if (!fs.existsSync(localDir)) fs.mkdirSync(localDir, { recursive: true });
+    fs.writeFileSync(localJsonPath, JSON.stringify(findings, null, 2), "utf8");
+  }
+
   // 2. Write HTML Report
   const htmlPath = path.join(outputDir, "depdrift-report.html");
   const htmlContent = generateHtmlReport(findings, reportType);
   fs.writeFileSync(htmlPath, htmlContent, "utf8");
 
-  // 3. Terminal Print Summary (Top 3 per severity)
-  console.log("\n" + chalk.bold.cyan("========================================"));
-  console.log(chalk.bold.cyan("            DEPDRIFT REPORT"));
-  console.log(chalk.bold.cyan("========================================\n"));
+  // 3. Write PR Markdown Summary if provided
+  if (markdownSummary) {
+    const mdPath = path.join(outputDir, "depdrift-pr-comment.md");
+    fs.writeFileSync(mdPath, markdownSummary, "utf8");
+    console.log(chalk.magenta(`\n📄 PR Comment Markdown saved to ${mdPath}`));
+  }
 
-  const high = findings.filter(f => f.severity === "high");
-  const medium = findings.filter(f => f.severity === "medium");
-  const low = findings.filter(f => f.severity === "low");
+  console.log(chalk.bold("\n========================================"));
+  console.log(chalk.bold("            DEPDRIFT REPORT            "));
+  console.log(chalk.bold("========================================\n"));
 
   if (findings.length === 0) {
     console.log(chalk.bold.green("Clean repository. Zero dependency drift findings detected.\n"));
-  } else {
-    // Print Top 3 High Severity
-    if (high.length > 0) {
-      console.log(chalk.bold.red(`HIGH SEVERITY FINDINGS (Showing Top 3 of ${high.length})`));
-      console.log(chalk.red("----------------------------------------"));
-      for (const f of high.slice(0, 3)) {
-        printFinding(f);
-      }
-      if (high.length > 3) {
-        console.log(chalk.dim(`\n  ... plus ${high.length - 3} more HIGH severity findings (see HTML report for complete list)`));
-      }
-    }
+    return;
+  }
 
-    // Print Top 3 Medium Severity
-    if (medium.length > 0) {
-      console.log(chalk.bold.yellow(`\nMEDIUM SEVERITY FINDINGS (Showing Top 3 of ${medium.length})`));
-      console.log(chalk.yellow("----------------------------------------"));
-      for (const f of medium.slice(0, 3)) {
-        printFinding(f);
-      }
-      if (medium.length > 3) {
-        console.log(chalk.dim(`\n  ... plus ${medium.length - 3} more MEDIUM severity findings (see HTML report for complete list)`));
-      }
-    }
+  const high = findings.filter((f) => f.severity === "high");
+  const medium = findings.filter((f) => f.severity === "medium");
+  const low = findings.filter((f) => f.severity === "low");
 
-    // Print Top 3 Low Severity
-    if (low.length > 0) {
-      console.log(chalk.bold.blue(`\nLOW SEVERITY FINDINGS (Showing Top 3 of ${low.length})`));
-      console.log(chalk.blue("----------------------------------------"));
-      for (const f of low.slice(0, 3)) {
-        printFinding(f);
-      }
-      if (low.length > 3) {
-        console.log(chalk.dim(`\n  ... plus ${low.length - 3} more LOW severity findings (see HTML report for complete list)`));
-      }
+  // Print Top 3 High Severity
+  if (high.length > 0) {
+    console.log(chalk.bold.red(`HIGH SEVERITY FINDINGS (Showing Top 3 of ${high.length})`));
+    console.log(chalk.red("----------------------------------------"));
+    for (const f of high.slice(0, 3)) {
+      printFinding(f);
+    }
+    if (high.length > 3) {
+      console.log(chalk.dim(`\n  ... plus ${high.length - 3} more HIGH severity findings (see HTML report for complete list)`));
     }
   }
 
-  // Summary footer (Displays entire counts)
+  // Print Top 3 Medium Severity
+  if (medium.length > 0) {
+    console.log(chalk.bold.yellow(`\nMEDIUM SEVERITY FINDINGS (Showing Top 3 of ${medium.length})`));
+    console.log(chalk.yellow("----------------------------------------"));
+    for (const f of medium.slice(0, 3)) {
+      printFinding(f);
+    }
+    if (medium.length > 3) {
+      console.log(chalk.dim(`\n  ... plus ${medium.length - 3} more MEDIUM severity findings (see HTML report for complete list)`));
+    }
+  }
+
+  // Print Top 3 Low Severity
+  if (low.length > 0) {
+    console.log(chalk.bold.blue(`\nLOW SEVERITY FINDINGS (Showing Top 3 of ${low.length})`));
+    console.log(chalk.blue("----------------------------------------"));
+    for (const f of low.slice(0, 3)) {
+      printFinding(f);
+    }
+    if (low.length > 3) {
+      console.log(chalk.dim(`\n  ... plus ${low.length - 3} more LOW severity findings (see HTML report for complete list)`));
+    }
+  }
+
+  // Summary footer
   console.log("\n" + chalk.bold("----------------------------------------"));
   console.log(chalk.bold("TOTAL SUMMARY COUNT"));
   console.log(chalk.bold("----------------------------------------"));
   console.log(`${chalk.red(`${high.length} High`)} | ${chalk.yellow(`${medium.length} Medium`)} | ${chalk.blue(`${low.length} Low`)} | Total: ${findings.length}`);
   console.log(chalk.bold.green(`\nHTML Report generated at: ${htmlPath}`));
   console.log(chalk.gray(`JSON Report generated at: ${jsonPath}\n`));
-
-  return htmlPath;
 }
 
-function printFinding(f: Finding) {
-  const badge = f.severity === "high" ? chalk.bgRed.black(" HIGH ") : f.severity === "medium" ? chalk.bgYellow.black(" MEDIUM ") : chalk.bgBlue.black(" LOW ");
-  console.log(`\n${badge} ${chalk.bold(f.dependency)} (${chalk.cyan(f.fromPackage)} - ${chalk.magenta(f.ecosystem)})`);
-  console.log(`  ${chalk.bold("Type:")} ${f.type}`);
-  console.log(`  ${chalk.bold("Reasoning:")} ${f.reasoning}`);
-  
+function printFinding(f: AIEnhancedFinding) {
+  const sevLabel = f.severity.toUpperCase();
+  console.log(`\n ${sevLabel === "HIGH" ? chalk.bgRed.white(` ${sevLabel} `) : sevLabel === "MEDIUM" ? chalk.bgYellow.black(` ${sevLabel} `) : chalk.bgBlue.white(` ${sevLabel} `)}  ${chalk.bold(f.dependency)} (${f.fromPackage} - ${f.ecosystem})`);
+  console.log(`  Type: ${f.type}`);
+  console.log(`  Reasoning: ${f.reasoning}`);
+  if (f.aiAnalysis) {
+    console.log(`  🤖 AI Explanation: ${chalk.white(f.aiAnalysis.explanation)}`);
+    if (f.aiAnalysis.impact) {
+      console.log(`  ⚠️  AI Impact: ${chalk.yellow(f.aiAnalysis.impact)}`);
+    }
+  }
   if (f.evidence && f.evidence.length > 0) {
-    console.log(`  ${chalk.bold("Evidence:")} ${f.evidence.join(", ")}`);
+    console.log(`  Evidence: ${f.evidence.join(", ")}`);
   }
-
   if (f.introducedInCommit) {
-    console.log(`  ${chalk.bold("Introduced in:")} ${chalk.yellow(f.introducedInCommit.hash.slice(0, 7))} (${f.introducedInCommit.date})`);
+    console.log(`  Commit: ${f.introducedInCommit.hash.slice(0, 7)} (${f.introducedInCommit.date}) by ${f.introducedInCommit.author}`);
   }
-
-  console.log(`  ${chalk.bold.green("Suggested Fix:")} ${chalk.italic(f.suggestedFix)}`);
+  console.log(`  Suggested Fix: ${chalk.green(f.aiAnalysis?.recommendedFix || f.suggestedFix)}`);
 }
 
-function generateHtmlReport(findings: Finding[], reportType: ReportType = "local"): string {
-  const highCount = findings.filter(f => f.severity === "high").length;
-  const mediumCount = findings.filter(f => f.severity === "medium").length;
-  const lowCount = findings.filter(f => f.severity === "low").length;
+function generateHtmlReport(findings: AIEnhancedFinding[], reportType: ReportType = "local"): string {
+  const highCount = findings.filter((f) => f.severity === "high").length;
+  const mediumCount = findings.filter((f) => f.severity === "medium").length;
+  const lowCount = findings.filter((f) => f.severity === "low").length;
   const timestamp = new Date().toLocaleString();
   const reportTypeLabel = reportType === "github" ? "GitHub Remote Scan" : reportType === "history" ? "Git History Scan" : "Local Scan";
 
-  const safeJson = JSON.stringify(findings).replace(/</g, '\\u003c');
+  const safeJson = JSON.stringify(findings).replace(/</g, "\\u003c");
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -275,6 +293,17 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
     .card.medium .reasoning { border-left-color: var(--medium); background: var(--medium-bg); }
     .card.low .reasoning { border-left-color: var(--low); background: var(--low-bg); }
 
+    .ai-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      color: #166534;
+    }
+    .ai-title { font-weight: 700; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
+
     .fix-box {
       background: var(--code-bg);
       border: 1px solid var(--border);
@@ -343,6 +372,9 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
       container.innerHTML = filtered.map(f => {
         const evHtml = f.evidence && f.evidence.length ? '<div class="meta-item"><strong>Evidence:</strong> ' + escapeHtml(f.evidence.join(', ')) + '</div>' : '';
         const commitHtml = f.introducedInCommit ? '<div class="meta-item"><strong>Introduced in:</strong> ' + escapeHtml(f.introducedInCommit.hash.slice(0, 7)) + ' (' + escapeHtml(f.introducedInCommit.date) + ')</div>' : '';
+        const aiHtml = f.aiAnalysis ? '<div class="ai-box"><div class="ai-title">🤖 AI Analysis</div><div>' + escapeHtml(f.aiAnalysis.explanation) + '</div>' + (f.aiAnalysis.impact ? '<div style="margin-top:0.25rem; font-weight:600;">Impact: ' + escapeHtml(f.aiAnalysis.impact) + '</div>' : '') + '</div>' : '';
+
+        const fixText = f.aiAnalysis && f.aiAnalysis.recommendedFix ? f.aiAnalysis.recommendedFix : f.suggestedFix;
 
         return '<div class="card ' + f.severity + '">' +
           '<div class="card-header">' +
@@ -358,10 +390,11 @@ function generateHtmlReport(findings: Finding[], reportType: ReportType = "local
             evHtml + commitHtml +
           '</div>' +
           '<div class="reasoning">' + escapeHtml(f.reasoning) + '</div>' +
+          aiHtml +
           '<div class="fix-box">' +
             '<div>' +
               '<div class="fix-label">Suggested Fix</div>' +
-              '<div class="fix-code">' + escapeHtml(f.suggestedFix) + '</div>' +
+              '<div class="fix-code">' + escapeHtml(fixText) + '</div>' +
             '</div>' +
           '</div>' +
         '</div>';
