@@ -38,7 +38,7 @@ export function generateReport(
   if (markdownSummary) {
     const mdPath = path.join(outputDir, "depdrift-pr-comment.md");
     fs.writeFileSync(mdPath, markdownSummary, "utf8");
-    console.log(chalk.magenta(`\n📄 PR Comment Markdown saved to ${mdPath}`));
+    console.log(chalk.magenta(`\nPR Comment Markdown saved to ${mdPath}`));
   }
 
   console.log(chalk.bold("\n========================================"));
